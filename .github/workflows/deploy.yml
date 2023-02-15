@@ -1,0 +1,109 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Docker layers
+        uses: actions/cache@master
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+  build-client-dev:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Check out the source code
+        uses: actions/checkout@master
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push client dev docker image
+        uses: docker/build-push-action@master
+        with:
+          context: ./client
+          file: ./client/Dockerfile.dev
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:dev
+          push: true
+
+  test-client-dev:
+    runs-on: ubuntu-latest
+    needs: build-client-dev
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Test the dev docker image
+        run: docker run -e CI=true ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:dev npm run test a
+
+  build-release:
+    runs-on: ubuntu-latest
+    needs: test-client-dev
+    steps:
+      - name: Check out the source code
+        uses: actions/checkout@master
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push client release docker image
+        uses: docker/build-push-action@master
+        with:
+          context: ./client
+          file: ./client/Dockerfile
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:latest
+          push: true
+
+      - name: Build and push server release docker image
+        uses: docker/build-push-action@master
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-server:latest
+          push: true
+
+      - name: Build and push nginx release docker image
+        uses: docker/build-push-action@master
+        with:
+          context: ./nginx
+          file: ./nginx/Dockerfile
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-nginx:latest
+          push: true
+
+      - name: Build and push worker release docker image
+        uses: docker/build-push-action@master
+        with:
+          context: ./worker
+          file: ./worker/Dockerfile
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-worker:latest
+          push: true
+
+
