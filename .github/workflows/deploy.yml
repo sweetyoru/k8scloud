@@ -90,14 +90,6 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-server:latest
           push: true
 
-      - name: Build and push nginx release docker image
-        uses: docker/build-push-action@master
-        with:
-          context: ./nginx
-          file: ./nginx/Dockerfile
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-nginx:latest
-          push: true
-
       - name: Build and push worker release docker image
         uses: docker/build-push-action@master
         with:
