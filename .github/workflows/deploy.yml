@@ -81,7 +81,9 @@ jobs:
         with:
           context: ./client
           file: ./client/Dockerfile
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:${{ github.sha }}
           push: true
 
       - name: Build and push server release docker image
@@ -89,7 +91,9 @@ jobs:
         with:
           context: ./server
           file: ./server/Dockerfile
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-server:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-server:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-server:${{ github.sha }}
           push: true
 
       - name: Build and push worker release docker image
@@ -97,7 +101,9 @@ jobs:
         with:
           context: ./worker
           file: ./worker/Dockerfile
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-worker:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-worker:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-worker:${{ github.sha }}
           push: true
 
   deploy:
