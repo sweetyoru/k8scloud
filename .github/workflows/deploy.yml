@@ -126,12 +126,13 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Make kubectl config file
-      run: 'cat $HOME/.kube/config | base64'
+      run: 'cat $HOME/.kube/config | base64 > ./a'
 
     - name: deploy to cluster
       uses: kodermax/kubectl-aws-eks@master
       env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_STAGING }}
+        KUBE_CONFIG_DATA: ./a
+        IMAGE_TAG: ${{ github.sha }
       with:
         args: set image deployment/$ECR_REPOSITORY $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -141,3 +142,7 @@ jobs:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: rollout status deployment/my-app
+
+
+#<--eksctl create cluster -f cluster.yml
+
