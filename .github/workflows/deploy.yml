@@ -112,10 +112,10 @@ jobs:
     needs: build-release
     steps:
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@master
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -123,7 +123,7 @@ jobs:
 
     - name: Login to AWS ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@master
+      uses: aws-actions/amazon-ecr-login@v1
 
     - name: Make kubectl config file
       run: 'cat $HOME/.kube/config | base64'
