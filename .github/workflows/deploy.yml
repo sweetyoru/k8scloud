@@ -132,7 +132,7 @@ jobs:
       uses: kodermax/kubectl-aws-eks@master
       env:
         KUBE_CONFIG_DATA: ./a
-        IMAGE_TAG: ${{ github.sha }
+        IMAGE_TAG: ${{ github.sha }}
       with:
         args: set image deployment/$ECR_REPOSITORY $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
