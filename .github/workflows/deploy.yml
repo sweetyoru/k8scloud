@@ -128,16 +128,8 @@ jobs:
     - name: Update kube config
       run: aws eks update-kubeconfig --region us-west-1 --name k8scloud
 
-#   - name: Build and push CONTAINER_NAME
-#        uses: ianbelcher/eks-kubectl-action@master
-#        with:
-#          cluster_name: ${{ secrets.CLUSTER_NAME }}
-#          args: set image --record deployment/pod-name pod-name=${{ steps.build.outputs.IMAGE_URL }}
     - name: deploy to cluster
       uses: kodermax/kubectl-aws-eks@master
 
     - name: Deploy image to Amazon EKS
-      run: |
-        kubectl apply -f k8s
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.6.3/deploy/static/provider/aws/deploy.yaml
-
+      run: kubectl apply -f k8s
