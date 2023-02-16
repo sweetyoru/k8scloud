@@ -39,7 +39,9 @@ jobs:
         with:
           context: ./client
           file: ./client/Dockerfile.dev
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:dev
+          tags:
+            - ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:dev
+            - ${{ secrets.DOCKERHUB_USERNAME }}/docker-multi-client:$GIT_SHA
           push: true
 
   test-client-dev:
